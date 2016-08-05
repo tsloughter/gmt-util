@@ -65,20 +65,11 @@
          global_timestamp_binary/0,
          global_timestamp_binary/1]).
 
-
-%% TODO: Incomplete!  100% of public API is not yet covered.
-
--spec(global_timestamp_binary/0 :: () -> binary()).
--spec(gregs_to_gentime/1 :: (non_neg_integer()) -> binary()).
--spec(time_t/0 :: () -> integer()).
-
-
-
 %% @spec () -> integer()
 %% @doc Return the current time as a <tt>time_t</tt>-style integer.
 
 time_t() ->
-    time_t(erlang:now()).
+    time_t(erlang:timestamp()).
 
 %% @spec ({integer(), integer(), integer()}) -> integer()
 %% @doc Convert an Erlang-style <tt>now()</tt> timestamp as a
@@ -92,7 +83,7 @@ time_t({MSec, Sec, _}) ->
 %% plus milliseconds.
 
 time_t_msec() ->
-    time_t_msec(erlang:now()).
+    time_t_msec(erlang:timestamp()).
 
 %% @spec ({integer(), integer(), integer()}) -> {integer(), integer()}
 %% @doc Convert an Erlang-style <tt>now()</tt> timestamp as a
@@ -105,7 +96,7 @@ time_t_msec({MSec, Sec, USec}) ->
 %% @doc Return the current time as a <tt>time_t</tt>-style integer plus microseconds.
 
 time_t_usec() ->
-    time_t_usec(erlang:now()).
+    time_t_usec(erlang:timestamp()).
 
 %% @spec ({integer(), integer(), integer()}) -> {integer(), integer()}
 %% @doc Convert an Erlang-style <tt>now()</tt> timestamp as a
@@ -115,13 +106,13 @@ time_t_usec({MSec, Sec, USec}) ->
     {(MSec * 1000000) + Sec, USec}.
 
 %% @spec () -> integer()
-%% @doc Create a timestamp based on the current time (erlang:now()).
+%% @doc Create a timestamp based on the current time (erlang:timestamp()).
 
 time_integer() ->
-    time_integer(erlang:now()).
+    time_integer(erlang:timestamp()).
 
 %% @spec ({integer(), integer(), integer()}) -> integer()
-%% @doc Create a timestamp based on the current time (erlang:now()).
+%% @doc Create a timestamp based on the current time (erlang:timestamp()).
 
 time_integer({MSec, Sec, USec}) ->
     (MSec * 1000000 * 1000000) + (Sec * 1000000) + USec.
@@ -818,7 +809,7 @@ smpp_to_abs(<<YY:2/binary, MM:2/binary, DD:2/binary, HH:2/binary, Mm:2/binary, S
     Hour = list_to_integer(binary_to_list(HH)),
     Min = list_to_integer(binary_to_list(Mm)),
     Sec = list_to_integer(binary_to_list(SS)),
-    _TSec = list_to_integer(binary_to_list(TS)),
+    _ = list_to_integer(binary_to_list(TS)),
     QDiff = list_to_integer(binary_to_list(QD)),
 
     case P of
@@ -840,16 +831,16 @@ smpp_to_abs(<<YY:2/binary, MM:2/binary, DD:2/binary, HH:2/binary, Mm:2/binary, S
 
 %% @spec (infinity | integer() | {integer(), integer(), integer()}) -> {integer(), integer(), integer()}
 %% @doc Construct an Erlang-style timestamp given an expiry in
-%% milliseconds relative to erlang:now().  Treat an expiry having a
+%% milliseconds relative to erlang:timestamp().  Treat an expiry having a
 %% MSecs of zero as a symbolic deadline rather than an absolute
 %% timestamp.
 
 make_expires(infinity) ->
-    make_expires(erlang:now(), infinity);
+    make_expires(erlang:timestamp(), infinity);
 make_expires(Timeout) when is_integer(Timeout) ->
-    make_expires(erlang:now(), Timeout);
+    make_expires(erlang:timestamp(), Timeout);
 make_expires({0, _S, _US}=_Expires) ->
-    {MS, S, US} = erlang:now(),
+    {MS, S, US} = erlang:timestamp(),
     {MS, S + _S, US + _US};
 make_expires({_MS, _S, _US}=Expires) ->
     Expires.
@@ -872,7 +863,7 @@ make_expires({MS, S, US}, {0, _S, _US}) ->
 %% @doc Multiply an Erlang-style timestamp by the given factor.
 
 multiply_expires(Factor, Expires) ->
-    multiply_expires(Factor, Expires, erlang:now()).
+    multiply_expires(Factor, Expires, erlang:timestamp()).
 
 %% @spec (float(), {integer(), integer(), integer()}, {integer(),
 %% integer(), integer()}) -> {integer(), integer(), integer()}
@@ -906,7 +897,7 @@ make_timeout({0, Sec, USec}) ->
             Y
     end;
 make_timeout(Expires) ->
-    make_timeout(erlang:now(), Expires).
+    make_timeout(erlang:timestamp(), Expires).
 
 %% @spec ({integer(), integer(), integer()}, {integer(), integer(), integer()}) -> integer() | infinity
 
@@ -1028,7 +1019,7 @@ add_timeouts(Timeout1, Timeout2) ->
 %% @spec () -> {term(),node()}
 %% @doc construct a global timestamp
 global_timestamp() ->
-    {erlang:now(),erlang:node()}.
+    {erlang:timestamp(),erlang:node()}.
 
 %% @spec (Now::term()) -> {term(),node()}
 %% @doc construct a global timestamp

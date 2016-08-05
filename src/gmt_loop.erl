@@ -34,7 +34,7 @@
 
 %% TODO: Incomplete!  100% of public API is not yet covered.
 
--spec(do_while/2 :: (fun((_) -> any()),_) -> any() ).
+-spec do_while(fun((_) -> any()),_) -> any().
 
 
 %% @spec (fun(), term()) -> term()
@@ -69,9 +69,9 @@ do_while2({false, Acc}, _Fun) ->
 %% @doc Like <tt>timer:tc/3</tt> but for a fun of arity 0.
 
 tc(Fun) ->
-    Start = now(),
+    Start = erlang:timestamp(),
     Res = Fun(),
-    End = now(),
+    End = erlang:timestamp(),
     {timer:now_diff(End, Start), Res}.
 
 %% @spec (fun(), integer()) -> {integer(), integer(), term()}
@@ -92,4 +92,3 @@ tc_iter(M, F, A, Iters) when Iters > 0 ->
     Ts = [timer:tc(M, F, A) || _ <- lists:seq(1, Iters)],
     Sum = lists:foldl(fun({Time, _}, Acc) -> Acc + Time end, 0, Ts),
     {Sum, round(Sum / Iters), element(2, hd(Ts))}.
-

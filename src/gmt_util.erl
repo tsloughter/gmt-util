@@ -345,7 +345,7 @@ int_infinity_compare(A, B) when is_integer(A) and is_integer(B)->
 %% @doc Return a random member of tuple T.
 
 random_item(T) when is_tuple(T) ->
-    N = random:uniform(tuple_size(T) - 1) + 1,
+    N = rand:uniform(tuple_size(T) - 1) + 1,
     element(N, T).
 
 %% @spec timeout_ify(X::term()) -> timeout()
@@ -1292,7 +1292,7 @@ randomize_list(L) ->
 %% @spec (list(), integer()) -> list()
 %% @doc randomly sort a list
 randomize_list(L, N) ->
-    WrapL = [{random:uniform(N), X} || X <- L],
+    WrapL = [{rand:uniform(N), X} || X <- L],
     TempL = lists:sort(WrapL),
     [X || {_, X} <- TempL].
 

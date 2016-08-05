@@ -67,7 +67,7 @@ tlog() ->
     end.
 
 tlog(Event) ->
-    tlog(Event, now()).
+    tlog(Event, erlang:timestamp()).
 
 tlog(#tlog_core{}=Event, Now) ->
     case get(?TLOG_KEY_FORMATTER) of
@@ -122,7 +122,7 @@ tlog_get() ->
 
 
 tlog_duration(StartTime) ->
-    tlog_duration(StartTime, now()).
+    tlog_duration(StartTime, erlang:timestamp()).
 
 tlog_duration(undefined, Now) ->
     {0, Now};
@@ -200,4 +200,3 @@ get_more_fevents(Acc, AccLen) ->
     after 0 ->
             {Acc, AccLen}
     end.
-
